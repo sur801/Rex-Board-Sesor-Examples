@@ -1,0 +1,2 @@
+
+#define MCP3021_SLAVE_ADDRESS 0x4D
