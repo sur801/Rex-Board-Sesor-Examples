@@ -236,7 +236,9 @@ void Data_Print(uint8_t data_check)
 
 //-----------------------------------------------------------
 
-//MAX30105 Data Setup
+/* MAX30105 Data Setup
+ * description : ir_led 값을 읽어와 unblockedValue 값을 세팅해준다.
+ */
 void Data_Setup(void)
 {
 	uint8_t x;
@@ -280,7 +282,10 @@ void Data_Setup(void)
 
 //-----------------------------------------------------------
 
-//MAX30105 Smoke(Particle) Data Analisis
+/* MAX30105 Smoke(Particle) Data Analisis
+ * description : Data_Setup 함수를 통해 구한 unblockedValue 값을 이용해, ir_led값의 변화량을 구하고,
+ * 공기 중 입자 데이터를 검출한다.
+ */
 void Data_Analisis(void)
 {
 	static uint16_t data_print_count = 0;
