@@ -3,6 +3,8 @@
 #include "./SHT35-DIS/SHT35-DIS.h"
 #include "./MAX30101/SPO2.h"
 #include "./APDS-9960/APDS9960.h"
+#include "./MAX30105/MAX30105.h"
+#include "./MCP3021_RA12P/mcp3021_ra12p.h"
 
 
 uint16_t uv, visible;

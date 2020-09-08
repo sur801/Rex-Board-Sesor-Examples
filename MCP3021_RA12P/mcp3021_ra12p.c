@@ -5,8 +5,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
-
-#define MCP3021_SLAVE_ADDRESS 0x4D
+#include "mcp3021_ra12p.h"
 
 /* [in] :   fd에 저장된 데이터를 얻기 위해 fd를 불러온다.
  * [out] :  센서값 result를 반환한다.
