@@ -19,3 +19,22 @@
 
 //TCA9543A I2C MUX
 #define TCA9543A_ADDRESS            0x73
+
+#include <stdint.h>
+
+/*"/dev/i2c-0"'s file descriptor*/
+int MAX30105_fd;
+
+void MAX30105_I2C_Slave_Check(void);
+int MAX30105_WriteData(uint8_t reg_addr, uint8_t *data, int size);
+int MAX30105_ReadData(uint8_t reg_addr, uint8_t *data, int size);
+void MAX30105_I2C_MUX(void);
+void MAX30105_Reset(void);
+int MAX30105_Init(void);
+unsigned long millis();
+void MAX30105_Read_FIFO(void);
+void MAX30105_Data_Print(uint8_t data_check);
+void MAX30105_Data_Setup(void);
+void MAX30105_Data_Analisis(void);
+int MAX30105_main(void);
+

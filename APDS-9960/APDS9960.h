@@ -16,7 +16,7 @@
 #define APDS9960_ID_2           0x9C 
 
 //APDS-9960 Error Code
-#define ERROR                   0xFF
+#define APDS9960_ERROR          0xFF
 
 //APDS-9960 Register Address
 #define APDS9960_ENABLE         0x80
@@ -148,8 +148,10 @@
 #define DEFAULT_GCONF3          0       // All photodiodes active during gesture
 #define DEFAULT_GIEN            0       // Disable gesture interrupts
 
-int WriteData(uint8_t reg_addr, uint8_t *data, int size);
-int ReadData(uint8_t reg_addr, uint8_t *data, int size);
+int APDS_9960_fd;
+
+int APDS_9960_WriteData(uint8_t reg_addr, uint8_t *data, int size);
+int APDS_9960_ReadData(uint8_t reg_addr, uint8_t *data, int size);
 uint8_t APDS9960_getMode(void);
 int APDS9960_setMode(uint8_t mode, uint8_t enable);
 int APDS9960_setLEDDrive(uint8_t drive);
@@ -183,4 +185,5 @@ int APDS9960_enableGesture(void);
 int APDS9960_readGesture(void);
 void APDS9960_printGesture(void);
 
+int APDS_9960_main(void);
 #endif

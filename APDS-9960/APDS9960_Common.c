@@ -11,8 +11,8 @@
 
 //---------------------------------------------------------------
 
-extern int fd;
 
+extern int APDS_9960_fd;
 
 /* APDS-9960 Sensor Register Data Write
  * [in] : reg_addr - 사용하는 센서의 register 주소, data - reg_addr의 주소에 써줄 값의 시작 주소, 
@@ -20,13 +20,13 @@ extern int fd;
  * [out] : WriteData 함수를 잘 실행했다는 의미로 1을 return 해줌.
  * description : data 매개변수에 담긴 주소로 부터 size 만큼 크기의 값을 읽어와 센서의 register 주소에 찾아가 저장한다.
  */
-int WriteData(uint8_t reg_addr, uint8_t *data, int size) 
+int APDS_9960_WriteData(uint8_t reg_addr, uint8_t *data, int size) 
 {
     uint8_t *buf;
     buf = malloc(size + 1);
     buf[0] = reg_addr;
     memcpy(buf + 1, data, size);
-    write(fd, buf, size + 1);
+    write(APDS_9960_fd, buf, size + 1);
     free(buf);
 
     return 1;
@@ -34,17 +34,16 @@ int WriteData(uint8_t reg_addr, uint8_t *data, int size)
 
 //---------------------------------------------------------------
 
-
 /* APDS-9960 Sensor Register Data Read
  * [in] : reg_addr - 사용하는 센서의 register 주소, data - reg_addr의 주소에서 읽어온 값을 써줄 목적지 주소, 
  *          size - reg_addr에서 읽어올 데이터의 크기
  * [out] : ReadData 함수를 잘 실행했다는 의미로 1을 return 해줌.
  * description : 센서의 register 주소에서 size 만큼 byte를 읽어와 data 매개변수의 주소에 찾아가 저장한다.
  */
-int ReadData(uint8_t reg_addr, uint8_t *data, int size)
+int APDS_9960_ReadData(uint8_t reg_addr, uint8_t *data, int size)
 {
-    write(fd, &reg_addr, 1);
-    read(fd, data, size);
+    write(APDS_9960_fd, &reg_addr, 1);
+    read(APDS_9960_fd, data, size);
 
     return 1;
 }
@@ -54,9 +53,9 @@ uint8_t APDS9960_getMode()
 {
     uint8_t enable_value;
     
-    if( !ReadData(APDS9960_ENABLE, &enable_value, 1) ) 
+    if( !APDS_9960_ReadData(APDS9960_ENABLE, &enable_value, 1) ) 
 	{
-        return ERROR;
+        return APDS9960_ERROR;
     }
     
     return enable_value;
@@ -70,9 +69,9 @@ int APDS9960_setMode(uint8_t mode, uint8_t enable)
     uint8_t reg_val;
 
     reg_val = APDS9960_getMode();
-    if( reg_val == ERROR ) 
+    if( reg_val == APDS9960_ERROR ) 
 	{
-        printf("ERROR\n");
+        printf("APDS9960_ERROR\n");
         return 0;
     }
     
@@ -103,7 +102,7 @@ int APDS9960_setMode(uint8_t mode, uint8_t enable)
         }
     }
         
-    if( !WriteData(APDS9960_ENABLE, &reg_val, 1) ) 
+    if( !APDS_9960_WriteData(APDS9960_ENABLE, &reg_val, 1) ) 
 	{
         return 0;
     }
@@ -117,7 +116,7 @@ int APDS9960_setLEDDrive(uint8_t drive)
 {
     uint8_t val;
     
-    if( !ReadData(APDS9960_CONTROL, &val, 1) ) {
+    if( !APDS_9960_ReadData(APDS9960_CONTROL, &val, 1) ) {
         return 0;
     }
     
@@ -126,7 +125,7 @@ int APDS9960_setLEDDrive(uint8_t drive)
     val &= 0b00111111;
     val |= drive;
     
-    if( !WriteData(APDS9960_CONTROL, &val, 1) ) {
+    if( !APDS_9960_WriteData(APDS9960_CONTROL, &val, 1) ) {
         return 0;
     }
     
@@ -150,7 +149,7 @@ int APDS9960_Init()
 
     //ID 확인
     uint8_t id, data;
-    ReadData(APDS9960_ID, &id, 1);
+    APDS_9960_ReadData(APDS9960_ID, &id, 1);
     printf("APDS-9960 ID: %x\n",id);
     if(id != 0xAB) {
         return 0;
@@ -159,58 +158,58 @@ int APDS9960_Init()
     if(!APDS9960_setMode(ALL, 0))      //MSB는 Reserved 비트
         return 0;
     data = DEFAULT_ATIME;
-    if(!WriteData(APDS9960_ATIME, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_ATIME, &data, 1))
         return 0;
     data = DEFAULT_WTIME;
-    if(!WriteData(APDS9960_WTIME, &data, 1)) 
+    if(!APDS_9960_WriteData(APDS9960_WTIME, &data, 1)) 
         return 0;
     data = DEFAULT_PROX_PPULSE;
-    if(!WriteData(APDS9960_PPULSE, &data, 1)) 
+    if(!APDS_9960_WriteData(APDS9960_PPULSE, &data, 1)) 
         return 0;
     data = DEFAULT_POFFSET_UR;
-    if(!WriteData(APDS9960_POFFSET_UR, &data, 1)) 
+    if(!APDS_9960_WriteData(APDS9960_POFFSET_UR, &data, 1)) 
         return 0;
     data = DEFAULT_POFFSET_DL;
-    if(!WriteData(APDS9960_POFFSET_UR, &data, 1)) 
+    if(!APDS_9960_WriteData(APDS9960_POFFSET_UR, &data, 1)) 
         return 0;
     data = DEFAULT_CONFIG1;
-    if(!WriteData(APDS9960_CONFIG1, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_CONFIG1, &data, 1))
         return 0;
     data = DEFAULT_CONFIG2;
-    if(!WriteData(APDS9960_CONFIG2, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_CONFIG2, &data, 1))
         return 0;
     data = DEFAULT_CONFIG3;
-    if(!WriteData(APDS9960_CONFIG3, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_CONFIG3, &data, 1))
         return 0;
     data = 0x00;
-    if(!WriteData(APDS9960_CONTROL, &data, 1))     //LED Drive 12.5, P, A Gain 1x, AGAIN_1X
+    if(!APDS_9960_WriteData(APDS9960_CONTROL, &data, 1))     //LED Drive 12.5, P, A Gain 1x, AGAIN_1X
         return 0;
     data = 0xFF;
-    if(!WriteData(APDS9960_AILTL, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_AILTL, &data, 1))
         return 0;
-    if(!WriteData(APDS9960_AILTH, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_AILTH, &data, 1))
         return 0;
     data = 0x00;
-    if(!WriteData(APDS9960_AIHTL, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_AIHTL, &data, 1))
         return 0;
-    if(!WriteData(APDS9960_AIHTH, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_AIHTH, &data, 1))
         return 0;
     data = 0;
-    if(!WriteData(APDS9960_PILT, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_PILT, &data, 1))
         return 0;
     data = 50;
-    if(!WriteData(APDS9960_PIHT, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_PIHT, &data, 1))
         return 0;
     
     //제스쳐 설정
     data = DEFAULT_GPENTH;
-    if(!WriteData(APDS9960_GPENTH, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GPENTH, &data, 1))
         return 0;
     data = DEFAULT_GEXTH;
-    if(!WriteData(APDS9960_GEXTH, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GEXTH, &data, 1))
         return 0;
     data = DEFAULT_GCONF1;
-    if(!WriteData(APDS9960_GCONF1, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GCONF1, &data, 1))
         return 0;
     if(!APDS9960_setGestureGain(DEFAULT_GGAIN))
         return 0;
@@ -220,19 +219,19 @@ int APDS9960_Init()
     	return 0;
     //기본 오프셋 설정
     data = 0;
-    if(!WriteData(APDS9960_GOFFSET_U, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GOFFSET_U, &data, 1))
         return 0;
     data = 0;
-    if(!WriteData(APDS9960_GOFFSET_D, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GOFFSET_D, &data, 1))
         return 0;
     data = 0;
-    if(!WriteData(APDS9960_GOFFSET_L, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GOFFSET_L, &data, 1))
         return 0;
     data = 0;
-    if(!WriteData(APDS9960_GOFFSET_R, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GOFFSET_R, &data, 1))
         return 0;
     data = DEFAULT_GPULSE;
-    if(!WriteData(APDS9960_GPULSE, &data, 1))
+    if(!APDS_9960_WriteData(APDS9960_GPULSE, &data, 1))
         return 0;
 
     return 1;

@@ -14,7 +14,7 @@ int APDS9960_setProximityGain(uint8_t drive)
 {
     uint8_t val;
     
-    if( !ReadData(APDS9960_CONTROL, &val, 1) ) {
+    if( !APDS_9960_ReadData(APDS9960_CONTROL, &val, 1) ) {
         return 0;
     }
     
@@ -23,7 +23,7 @@ int APDS9960_setProximityGain(uint8_t drive)
     val &= 0b11110011;
     val |= drive;
     
-    if( !WriteData(APDS9960_CONTROL, &val, 1) ) {
+    if( !APDS_9960_WriteData(APDS9960_CONTROL, &val, 1) ) {
         return 0;
     }
     
@@ -34,7 +34,7 @@ int APDS9960_setProximityIntEnable(uint8_t enable)
 {
     uint8_t val;
     
-    if( !ReadData(APDS9960_ENABLE, &val, 1) ) {
+    if( !APDS_9960_ReadData(APDS9960_ENABLE, &val, 1) ) {
         return 0;
     }
     
@@ -43,7 +43,7 @@ int APDS9960_setProximityIntEnable(uint8_t enable)
     val &= 0b11011111;
     val |= enable;
     
-    if( !WriteData(APDS9960_ENABLE, &val, 1) ) {
+    if( !APDS_9960_WriteData(APDS9960_ENABLE, &val, 1) ) {
         return 0;
     }
     
@@ -74,22 +74,17 @@ int APDS9960_enableProximity(int interrupt) {
     }
 }
 
-/* APDS9960_readProximity
- * description :ReadData 함수를 통해 지정된 주소에서 근접도 값을 계속 읽어옴.
-*/
 int APDS9960_readProximity(uint8_t *val)
 {
     *val = 0;
     
-    if( !ReadData(APDS9960_PDATA, val, 1) ) {
+    if( !APDS_9960_ReadData(APDS9960_PDATA, val, 1) ) {
         return 0;
     }
     
     return 1;
 }
-/* APDS9960_printProximity
- * description : APDS9960_printProximity 함수를 통해 읽어온 근접도를 출력해줌.
-*/
+
 void APDS9960_printProximity(void)
 {
     uint8_t prox;

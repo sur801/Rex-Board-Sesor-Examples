@@ -61,3 +61,18 @@
 #define SI1145_PARAM_ALSVISADCMISC_VISRANGE 0x20
 
 #endif
+
+#include <stdint.h>
+
+/*"/dev/i2c-0"'s file descriptor*/
+int Si1145_fd;
+
+void Si1145_I2C_Slave_Check(void);
+int Si1145_WriteData(uint8_t reg_addr, uint8_t *data, int size); 
+int Si1145_ReadData(uint8_t reg_addr, uint8_t *data, int size);
+void Si1145_WriteParam(uint8_t p, uint8_t v);
+void Si1145_Reset(void);
+void Si1145_Init(void);
+void UV_Visible_IR_Prox_Extraction(void);
+void Si1145_Data_print(void);
+int Si1145_main(void);

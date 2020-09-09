@@ -45,7 +45,7 @@ int APDS9960_setGestureGain(uint8_t gain)
 {
 	uint8_t val;
 
-	if(!ReadData(APDS9960_GCONF2, &val, 1))
+	if(!APDS_9960_ReadData(APDS9960_GCONF2, &val, 1))
 		return 0;
 
 	gain &= 0b00000011;
@@ -53,7 +53,7 @@ int APDS9960_setGestureGain(uint8_t gain)
 	val &= 0b10011111;
 	val |= gain;
 
-	if(!WriteData(APDS9960_GCONF2, &val, 1))
+	if(!APDS_9960_WriteData(APDS9960_GCONF2, &val, 1))
 		return 0;
 
 	return 1;
@@ -63,7 +63,7 @@ int APDS9960_setGestureLEDDrive(uint8_t drive)
 {
 	uint8_t val;
 
-	if(!ReadData(APDS9960_GCONF2, &val, 1))
+	if(!APDS_9960_ReadData(APDS9960_GCONF2, &val, 1))
 		return 0;
 
 	drive &= 0b00000011;
@@ -71,7 +71,7 @@ int APDS9960_setGestureLEDDrive(uint8_t drive)
 	val &= 0b11100111;
 	val |= drive;
 
-	if(!WriteData(APDS9960_GCONF2, &val, 1))
+	if(!APDS_9960_WriteData(APDS9960_GCONF2, &val, 1))
 		return 0;
 
 	return 1;
@@ -81,14 +81,14 @@ int APDS9960_setGestureWaitTime(uint8_t time)
 {
 	uint8_t val;
 
-	if(!ReadData(APDS9960_GCONF2, &val, 1))
+	if(!APDS_9960_ReadData(APDS9960_GCONF2, &val, 1))
 		return 0;
 
 	time &= 0b00000011;
 	val &= 0b11111100;
 	val |= time;
 
-	if(!WriteData(APDS9960_GCONF2, &val, 1))
+	if(!APDS_9960_WriteData(APDS9960_GCONF2, &val, 1))
 		return 0;
 
 	return 1;
@@ -98,8 +98,8 @@ int APDS9960_isGestureAvailable()
 {
 	uint8_t val;
 
-	if( !ReadData(APDS9960_GSTATUS, &val, 1) ) {
-		return ERROR;
+	if( !APDS_9960_ReadData(APDS9960_GSTATUS, &val, 1) ) {
+		return APDS9960_ERROR;
 	}
 
 	val &= APDS9960_GVALID;
@@ -233,7 +233,6 @@ int processGestureData(uint8_t *u_data, uint8_t *d_data, uint8_t *l_data, uint8_
 	return 0;
 }
 
-
 /* decodeGesture 
  * [out] : decodeGesture 함수를 잘 실행했다는 의미로 1을 return 해줌.
  * description : 계산된 상화, 좌우 방향 변화량과 절댓값을 이용해 알맞은 제스처를 찾아서 gesture_motion_에 저장한다.
@@ -248,7 +247,7 @@ int decodeGesture()
 		return 1;
 	}
 
-	//방향 해석
+	//방향 재기
 	if( (gesture_ud_count_ == -1) && (gesture_lr_count_ == 0) ) {
 		gesture_motion_ = DIR_UP;
 	} else if( (gesture_ud_count_ == 1) && (gesture_lr_count_ == 0) ) {
@@ -288,7 +287,6 @@ int decodeGesture()
 	return 1;
 }
 
-
 /* resetGestureParameters
  * description : 제스처 인식에 사용되는 parameter들을 초기화 해줌.
  */
@@ -314,7 +312,6 @@ int APDS9960_enableGesture(void)
 	return APDS9960_setMode(GESTURE, 1);
 }
 
-
 /* APDS9960_readGesture
  * [out] : 정수 motion 값을 return. 6가지 getsture를 1~6 의 번호로 값을 전달.
  * description : GVALID 값이 0이 아닌 동안에, 계속 제스처 센서에서 입력 값을 가져옴.
@@ -336,16 +333,16 @@ int APDS9960_readGesture() {
 	while(1) {
 		usleep(FIFO_PAUSE_TIME * 1000);
 
-		if(!ReadData(APDS9960_GSTATUS, &gstatus, 1))
-			return ERROR;
+		if(!APDS_9960_ReadData(APDS9960_GSTATUS, &gstatus, 1))
+			return APDS9960_ERROR;
 		//FIFO 레벨이 FIFO 임계값에 도달하면 GVALID 발생 GMODE와 GFLVL이 0이되면 리셋
 		if((gstatus & APDS9960_GVALID) == APDS9960_GVALID) {
 			//GFIFO 레벨 읽기
-			if(!ReadData(APDS9960_GFLVL, &fifo_level, 1))
-				return ERROR;
+			if(!APDS_9960_ReadData(APDS9960_GFLVL, &fifo_level, 1))
+				return APDS9960_ERROR;
 			//GFIFO level은 현재 읽을 수 있는 데이터 세트 수를 표시
 			if(fifo_level > 0) {
-				ReadData(APDS9960_GFIFO_U, fifo_data, (fifo_level * 4));
+				APDS_9960_ReadData(APDS9960_GFIFO_U, fifo_data, (fifo_level * 4));
 				// DEBUG 매크로(#define DEBUG)가 정의되어 있다면 #ifdef, #endif 사이의 코드를 컴파일
 #ifdef DEBUG
 				printf("Start\n");
@@ -364,7 +361,7 @@ int APDS9960_readGesture() {
 
 				// 각 데이터 배열을 processGestureData 함수의 인자로 넘겨줘서, 상하 좌우 방향으로 움직인 변화량, 절대값 등.. 을 계산한다.
 				if(processGestureData(u_data, d_data, l_data, r_data, fifo_level)) {
-
+					
 					// processGestureData 를 통해 계산 값들을 통해 인식된 gesture를 해석하고 gesture_motion_ 변수에 계속 update해줌.
 					if(decodeGesture()) {
 
@@ -375,19 +372,20 @@ int APDS9960_readGesture() {
 		} else {
 			usleep(FIFO_PAUSE_TIME * 1000);
 			decodeGesture();
-			motion = gesture_motion_;   
-			// 제스처를 인식하기 위해 사용하는 parameter들을 모두 초기화 한다. 
+			motion = gesture_motion_;    
+			// 제스처를 인식하기 위해 사용하는 parameter들을 모두 초기화 한다.
 			resetGestureParameters();
 			return motion;
 		}
 	}
 }
+
 /* APDS9960_printGesture
  * description : data 매개변수에 담긴 주소로 부터 size 만큼 크기의 값을 읽어와 센서의 register 주소에 찾아가 저장한다.
  */
 void APDS9960_printGesture(void)
 {
-
+	
 	// Gesture 인식이 가능한지 체크 해줌
 	if(APDS9960_isGestureAvailable()) 
 	{
