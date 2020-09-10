@@ -58,7 +58,7 @@ int APDS_9960_main(void)
 		usleep(130000);
 
 		// Proximity 센서에서 읽어온 근접도 값을 계속 출력 해줌 
-		// APDS9960_printProximity(); -> 근접도 값을 출력 안할거면 proximity.c 파일이 필요가 없음.
+		// APDS9960_printProximity(); 근접도 값을 보고 싶은 경우 사용
 		// microsecond 단위. 1000*1000 microsecond -> 1 second.
 		// 1.3초간 sleep(delay). 1.3초 단위로 제스처를 출력해줌.
 	}

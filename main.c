@@ -7,8 +7,12 @@
 #include <linux/i2c-dev.h>
 #include <fcntl.h>
 
-// 6가지 센서 라이브러리를 불러와 테스트 해보는 main 파일.
+/* 6가지 센서 라이브러리를 불러와 테스트 해보는 main 파일.
+   6개의 예제 폴더에서 각각 make를 해주어야 
+   센서 라이브러리를 통해 실행파일 생성 가능
+*/ 
 
+//연기(입자) 변화량 측정 센서 설정
 void MAX30105_Setting(){
     // setting for MAX30105 SENSOR
     if((MAX30105_fd = open("/dev/i2c-2", O_RDWR)) < 0) 
@@ -24,6 +28,7 @@ void MAX30105_Setting(){
 
 }
 
+//심박수, 산소포화도 측정 센서 설정
 void MAX30101_Setting(){
 	// setting for MAX30101 SENSOR
 	if((MAX30101_fd = open("/dev/i2c-2", O_RDWR)) < 0) 
@@ -39,7 +44,7 @@ void MAX30101_Setting(){
     MAX30101_Data_Setup();
 }
 
-
+//온도, 습도 측정 센서 설정
 void SHT35_Setting(){
     // setting for SHT35-DIS SENSOR
     if((SHT35_DIS_fd = open("/dev/i2c-2", O_RDWR)) < 0) 
@@ -50,6 +55,8 @@ void SHT35_Setting(){
 	SHT35_I2C_Slave_Check();
 	SHT35_Reset();
 }
+
+//제스처 센서 설정
 void APDS9960_Setting(){
     if((APDS_9960_fd = open("/dev/i2c-2", O_RDWR)) < 0) 
 	{
@@ -85,6 +92,7 @@ void APDS9960_Setting(){
 
 }
 
+//압력 측정 센서 설정
 void mcp3021_ra12p_Setting(){
 	
 	if((mcp3021_fd = open("/dev/i2c-2", O_RDWR)) < 0)
@@ -103,6 +111,7 @@ void mcp3021_ra12p_Setting(){
 
 }
 
+//자외선, 적외선, 가시광 센서 설정
 void Si1145_Setting(){
 	if((Si1145_fd = open("/dev/i2c-2", O_RDWR)) < 0) 
 	{
@@ -116,8 +125,12 @@ void Si1145_Setting(){
 	usleep(1000*100);	
 }
 
+/* main 함수에서 원하는 센서의 setting 함수와 Print data를 
+  제외하고, 나머지는 주석해서 사용한다.
+*/
 int main(void) {
-	
+
+	//센서 초기화
     MAX30105_Setting();
     SHT35_Setting();
     APDS9960_Setting();
@@ -129,19 +142,22 @@ int main(void) {
         //SHT35-DIS SENSOR DATA PRINT
         Temp_Hum_Extraction();
 		SHT35_Data_Print();
+
         //MAX30105 SENSOR DATA PRINT
         MAX30105_Data_Analisis();
+
         //APDS9960 SENSOR DATA PRINT
         APDS9960_printGesture();
+
 		//MAX30101 SENSOR DATA PRINT
 		MAX30101_Data_Analisis();
+
 		//MCP3021_RA12P SENSOR DATA PRINT
 		mcp3021_Data_Print(mcp3021_fd);
+		
 		//Si1145 SENSOR DATA PRINT
 		UV_Visible_IR_Prox_Extraction();
 		Si1145_Data_print();
 		usleep(1000*100);
-
-
     }
 }

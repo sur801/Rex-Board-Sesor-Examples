@@ -25,6 +25,11 @@ uint16_t getRA12Pvalue(int mcp3021_fd)
 	return result;
 }
 
+void mcp3021_Data_Print(int fd){
+	printf("RA12P : %hu\n", getRA12Pvalue(fd));
+
+}
+
 int mcp3021_main(void)
 {
 
