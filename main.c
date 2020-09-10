@@ -7,9 +7,10 @@
 #include <linux/i2c-dev.h>
 #include <fcntl.h>
 
-/* 6가지 센서 라이브러리를 불러와 테스트 해보는 main 파일.
-   6개의 예제 폴더에서 각각 make를 해주어야 
-   센서 라이브러리를 통해 실행파일 생성 가능
+/* 
+ * 6가지 센서 library를 include해서 테스트 해보는 main 파일.
+ * 6개의 센서 폴더에서 각각 make를 해주어야 해당 센서의 library가 생성됨.
+ * 6개의 센서 폴더에 각각 생성된 library가 있어야만 include해서 정상적으로 실행 가능. 
 */ 
 
 //연기(입자) 변화량 측정 센서 설정
@@ -130,32 +131,33 @@ void Si1145_Setting(){
 */
 int main(void) {
 
-	//센서 초기화
-    MAX30105_Setting();
-    SHT35_Setting();
-    APDS9960_Setting();
-	MAX30101_Setting();
-	mcp3021_ra12p_Setting();
-	Si1145_Setting();
+	//6가지 센서 설정값 초기화
+    MAX30105_Setting(); // 연기(입자) 변화량 측정 센서 설정
+    SHT35_Setting(); // 온도, 습도 데이터 측정 센서 설정
+    APDS9960_Setting(); // 제스처 감지 센서 설정
+	MAX30101_Setting(); // 심박수, 산소포와도 측정 센서 설정
+	mcp3021_ra12p_Setting(); // 압력 측정 센서 설정
+	Si1145_Setting(); // 자외선, 적외선, 가시광 센서 설정
 
     while(1) {
-        //SHT35-DIS SENSOR DATA PRINT
+        
+		// 온도, 습도 출력
         Temp_Hum_Extraction();
 		SHT35_Data_Print();
 
-        //MAX30105 SENSOR DATA PRINT
+        // 연기(입자) 변화량 출력
         MAX30105_Data_Analisis();
 
-        //APDS9960 SENSOR DATA PRINT
+        // 인식된 제스처 출력
         APDS9960_printGesture();
 
-		//MAX30101 SENSOR DATA PRINT
+		//심장박동, 산소 포화도 출력
 		MAX30101_Data_Analisis();
 
-		//MCP3021_RA12P SENSOR DATA PRINT
+		//압력 값 출력
 		mcp3021_Data_Print(mcp3021_fd);
 		
-		//Si1145 SENSOR DATA PRINT
+		// 자외선, 가시광 출력
 		UV_Visible_IR_Prox_Extraction();
 		Si1145_Data_print();
 		usleep(1000*100);
