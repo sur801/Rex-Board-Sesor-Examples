@@ -24,6 +24,10 @@ uint16_t getRA12Pvalue(int mcp3021_fd)
 
 	return result;
 }
+void mcp3021_Data_Print(int fd){
+	printf("RA12P : %hu\n", getRA12Pvalue(fd));
+
+}
 
 int mcp3021_main(void)
 {
@@ -35,7 +39,7 @@ int mcp3021_main(void)
 		exit(1);
 	}	
 	
-    	if(ioctl(mcp3021_fd, I2C_SLAVE, MCP3021_SLAVE_ADDRESS) < 0) 
+    if(ioctl(mcp3021_fd, I2C_SLAVE, MCP3021_SLAVE_ADDRESS) < 0) 
 	{
         	perror("Failed to acquire bus access and/or talk to slave\n");
        		exit(1);
@@ -46,7 +50,7 @@ int mcp3021_main(void)
 	//센서 데이터를 1초마다 출력한다.
 	while(1)
 	{
-		printf("RA12P : %hu\n", getRA12Pvalue(mcp3021_fd));
+		mcp3021_Data_Print(mcp3021_fd);
 		usleep(1000000);
 	}
 
